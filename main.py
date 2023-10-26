@@ -193,15 +193,36 @@ if __name__ == '__main__':
     st.title('SAFIE')
     st.write('Sistema de Assistência a Formulação de Contratos de Vesting')
     st.write('O SAFIE é um sistema de assistência a formulação de contratos de vesting. O sistema é capaz de interagir com o usuário, coletar informações e gerar um contrato de vesting.')
-    openai_api_key = st.sidebar.text_input('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')
+    openai_api_key = st.sidebar.text_input('OpenAI API Key', type='password')
 
     def generate_response(input_text):
         st.info(askBot(user='Edilson', message=input_text, verb=False))
 
-    with st.form('form_SAFIE'):
-        text = st.text_area('Enter text:', 'Olá, sou o SAFIE, seu assistente pessoal')
-        submitted = st.form_submit_button('Enviar')
-        if not openai_api_key.startswith('sk-'):
-            st.warning('Please enter your OpenAI API key!', icon='⚠')
-        if submitted and openai_api_key.startswith('sk-'):
-            generate_response(text)
+    import streamlit as st
+
+    st.title("Echo Bot")
+
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # React to user input
+    if prompt := st.chat_input("Digite sua mensagem aqui..."):
+        # Display user message in chat message container
+        st.chat_message("user").markdown(prompt)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        response = askBot(user='Edilson', message=prompt, verb=False)
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+        
